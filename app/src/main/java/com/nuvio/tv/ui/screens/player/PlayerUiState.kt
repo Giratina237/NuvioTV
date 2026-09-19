@@ -224,7 +224,11 @@ data class PlayerUiState(
     val torrentBufferingProgress: Float = 0f,
     // When true, suppress all torrent stats text (buffer, seeds, peers, speed)
     // from loading overlay, rebuffering indicator, and corner overlay.
-    val hideTorrentStats: Boolean = true
+    val hideTorrentStats: Boolean = true,
+    // Hold-to-Speed shortcut settings
+    val holdToSpeedEnabled: Boolean = false,
+    val holdToSpeedValue: Float = 2f,
+    val holdToSpeedKeyCode: Int = android.view.KeyEvent.KEYCODE_DPAD_UP
 )
 
 data class PlaybackTimelineState(

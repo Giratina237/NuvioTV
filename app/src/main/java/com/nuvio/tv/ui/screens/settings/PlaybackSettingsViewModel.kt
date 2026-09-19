@@ -531,4 +531,16 @@ class PlaybackSettingsViewModel @Inject constructor(
     suspend fun setNuvioPerformanceModeEnabled(enabled: Boolean) {
         playerSettingsDataStore.setNuvioPerformanceModeEnabled(enabled)
     }
+
+    suspend fun setHoldToSpeedEnabled(enabled: Boolean) {
+        playerSettingsDataStore.setHoldToSpeedEnabled(enabled)
+    }
+
+    suspend fun setHoldToSpeedValue(speed: Float) {
+        playerSettingsDataStore.setHoldToSpeedValue(speed)
+    }
+
+    suspend fun setHoldToSpeedKeyCode(keyCode: Int) {
+        playerSettingsDataStore.setHoldToSpeedKeyCode(keyCode)
+    }
 }

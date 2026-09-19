@@ -410,7 +410,16 @@ fun PlaybackSettingsContent(
                 onSetEnableHttp2 = { enabled ->
                     coroutineScope.launch { viewModel.setEnableHttp2(enabled) }
                     memoryUsageTrigger++
-                }
+                },
+                onSetHoldToSpeedEnabled = { enabled ->
+                    coroutineScope.launch { viewModel.setHoldToSpeedEnabled(enabled) }
+                },
+                onSetHoldToSpeedValue = { speed ->
+                    coroutineScope.launch { viewModel.setHoldToSpeedValue(speed) }
+                },
+                onSetHoldToSpeedKeyCode = { keyCode ->
+                    coroutineScope.launch { viewModel.setHoldToSpeedKeyCode(keyCode) }
+                },
             )
         }
 

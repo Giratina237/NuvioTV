@@ -198,7 +198,10 @@ internal fun PlaybackSettingsSections(
     onSetVodCacheSizeMb: (Int) -> Unit,
     onResetBufferSettingsToDefaults: () -> Unit,
     onSetEnableHttp2: (Boolean) -> Unit,
-    onResetNetworkSettingsToDefaults: () -> Unit
+    onResetNetworkSettingsToDefaults: () -> Unit,
+    onSetHoldToSpeedEnabled: (Boolean) -> Unit,
+    onSetHoldToSpeedValue: (Float) -> Unit,
+    onSetHoldToSpeedKeyCode: (Int) -> Unit,
 ) {
     var generalExpanded by rememberSaveable { mutableStateOf(false) }
     var afrExpanded by rememberSaveable { mutableStateOf(false) }
@@ -399,6 +402,90 @@ internal fun PlaybackSettingsSections(
                     onFocused = { focusedSection = PlaybackSection.GENERAL },
                     enabled = !generalUi.isExternalPlayer
                 )
+            }
+
+            // ── Hold-to-Speed ──
+            item(key = "general_hold_to_speed_toggle") {
+                ToggleSettingsItem(
+                    icon = Icons.Default.Speed,
+                    title = stringResource(R.string.hold_to_speed),
+                    subtitle = stringResource(R.string.hold_to_speed_sub),
+                    isChecked = playerSettings.holdToSpeedEnabled,
+                    onCheckedChange = onSetHoldToSpeedEnabled,
+                    onFocused = { focusedSection = PlaybackSection.GENERAL },
+                    enabled = !generalUi.isExternalPlayer
+                )
+            }
+
+            if (playerSettings.holdToSpeedEnabled && !generalUi.isExternalPlayer) {
+                item(key = "general_hold_to_speed_value") {
+                    val speedLabel = playerSettings.holdToSpeedValue.let { v ->
+                        if (v % 1f == 0f) "${v.toInt()}×" else "${v}×"
+                    }
+                    var showSpeedDialog by remember { mutableStateOf(false) }
+                    if (showSpeedDialog) {
+                        NuvioDialog(
+                            title = stringResource(R.string.hold_to_speed_boost_speed),
+                            subtitle = stringResource(R.string.hold_to_speed_boost_speed_sub),
+                            onDismiss = { showSpeedDialog = false }
+                        ) {
+                            PlayerSettings.HOLD_TO_SPEED_VALUES.forEach { speed ->
+                                val label = if (speed % 1f == 0f) "${speed.toInt()}×" else "${speed}×"
+                                val selected = speed == playerSettings.holdToSpeedValue
+                                SettingsChoiceChip(
+                                    label = label,
+                                    selected = selected,
+                                    onClick = {
+                                        onSetHoldToSpeedValue(speed)
+                                        showSpeedDialog = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    SettingsActionRow(
+                        title = stringResource(R.string.hold_to_speed_boost_speed),
+                        subtitle = stringResource(R.string.hold_to_speed_boost_speed_sub),
+                        value = speedLabel,
+                        onClick = { showSpeedDialog = true },
+                        onFocused = { focusedSection = PlaybackSection.GENERAL },
+                        leadingIcon = Icons.Default.Speed,
+                    )
+                }
+
+                item(key = "general_hold_to_speed_key") {
+                    val keyLabel = PlayerSettings.HOLD_TO_SPEED_BINDABLE_KEYS
+                        .firstOrNull { it.first == playerSettings.holdToSpeedKeyCode }?.second
+                        ?: "D-Pad Up"
+                    var showKeyDialog by remember { mutableStateOf(false) }
+                    if (showKeyDialog) {
+                        NuvioDialog(
+                            title = stringResource(R.string.hold_to_speed_trigger_button),
+                            subtitle = stringResource(R.string.hold_to_speed_trigger_button_sub),
+                            onDismiss = { showKeyDialog = false }
+                        ) {
+                            PlayerSettings.HOLD_TO_SPEED_BINDABLE_KEYS.forEach { (code, label) ->
+                                val selected = code == playerSettings.holdToSpeedKeyCode
+                                SettingsChoiceChip(
+                                    label = label,
+                                    selected = selected,
+                                    onClick = {
+                                        onSetHoldToSpeedKeyCode(code)
+                                        showKeyDialog = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    SettingsActionRow(
+                        title = stringResource(R.string.hold_to_speed_trigger_button),
+                        subtitle = stringResource(R.string.hold_to_speed_trigger_button_sub),
+                        value = keyLabel,
+                        onClick = { showKeyDialog = true },
+                        onFocused = { focusedSection = PlaybackSection.GENERAL },
+                        leadingIcon = Icons.Default.Timer,
+                    )
+                }
             }
 
             item(key = "general_auto_skip_header") {
